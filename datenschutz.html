@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datenschutzerklärung | Kutscherhaus Pölitzstraße 12a</title>
+  <meta name="description" content="Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO für das Kutscherhaus Pölitzstraße 12a, Leipzig." />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            estate: {
+              bg: '#0c0d10',
+              surface: '#14161b',
+              card: '#181a20',
+              border: '#262932',
+              borderSubtle: '#1c1e24',
+              muted: '#8b909a',
+              accent: '#c7b299',
+              accentHover: '#d9c7b0'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #0c0d10;
+      color: #f1f2f4;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection {
+      background-color: #c7b299;
+      color: #0c0d10;
+    }
+    .bg-grain {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+  </style>
+</head>
+<body class="min-h-[100dvh] flex flex-col justify-between relative overflow-x-hidden selection:bg-[#c7b299] selection:text-[#0c0d10]">
+  <!-- Grain Overlay -->
+  <div class="fixed inset-0 pointer-events-none z-[60] opacity-[0.032] mix-blend-overlay bg-grain" aria-hidden="true"></div>
+
+  <!-- Ambient Glow -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[500px] bg-[radial-gradient(ellipse_at_top,_rgba(199,178,153,0.06)_0%,_transparent_70%)] pointer-events-none blur-3xl -z-10"></div>
+
+  <!-- Header Nav -->
+  <header class="w-full border-b border-[#262932] bg-[#0c0d10]/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-[1200px] mx-auto px-6 md:px-10 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5 sm:gap-3 text-white tracking-tight font-medium hover:text-[#c7b299] transition-colors">
+        <span class="text-sm font-semibold tracking-wider uppercase text-zinc-200">Kutscherhaus</span>
+        <span class="text-xs text-zinc-500">/</span>
+        <span class="text-xs text-zinc-400 font-normal">Pölitzstraße 12a</span>
+      </a>
+
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <a href="impressum.html" class="text-zinc-400 hover:text-zinc-200 transition-colors hidden sm:inline-block">← Impressum</a>
+        <a href="index.html" onclick="if(window.history.length>1){window.history.back();return false;}" class="inline-flex items-center gap-2 px-4 py-2 border border-[#262932] bg-[#14161b] hover:bg-[#1c1e24] text-zinc-300 hover:text-white transition-all text-xs">
+          <span>← Zurück</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-[1000px] mx-auto px-6 md:px-10 py-16 md:py-24 flex-1 w-full">
+    <div class="mb-14 pb-8 border-b border-[#262932]">
+      <div class="text-xs font-mono uppercase tracking-widest text-[#c7b299] mb-3">Datenschutz & Privatsphäre</div>
+      <h1 class="text-3xl md:text-5xl font-light tracking-tight text-white mb-4">Datenschutzerklärung</h1>
+      <p class="text-sm md:text-base text-zinc-400 font-light max-w-[65ch] leading-relaxed">
+        Informationen über die Art, den Umfang und den Zweck der Verarbeitung von personenbezogenen Daten gemäß der Datenschutz-Grundverordnung (DSGVO).
+      </p>
+    </div>
+
+    <div class="space-y-12">
+      <!-- Section 1: Verantwortlicher -->
+      <section class="bg-[#14161b] border border-[#262932] p-6 md:p-8 space-y-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-[#c7b299]">1. Verantwortlicher für die Datenverarbeitung</div>
+        <div class="text-sm md:text-base text-white font-medium">Johannes Lange</div>
+        <div class="text-xs md:text-sm text-zinc-300 font-light leading-relaxed">
+          Pölitzstraße 12a<br />
+          04155 Leipzig<br />
+          Deutschland
+        </div>
+        <div class="pt-2 border-t border-[#262932]/60 flex flex-col sm:flex-row sm:items-center gap-2 text-xs md:text-sm">
+          <span class="text-zinc-500 font-mono">E-Mail:</span>
+          <a href="mailto:jlange223@yahoo.de" class="text-zinc-200 hover:text-[#c7b299] transition-colors underline underline-offset-4 decoration-[#262932] hover:decoration-[#c7b299]">
+            jlange223@yahoo.de
+          </a>
+        </div>
+      </section>
+
+      <!-- Section 2: Hosting Cloudflare Pages -->
+      <section class="bg-[#14161b] border border-[#262932] p-6 md:p-8 space-y-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-[#c7b299]">2. Hosting & Bereitstellung (Cloudflare Pages)</div>
+        <p class="text-xs md:text-sm text-zinc-300 font-light leading-relaxed">
+          Diese Website wird über <strong class="text-white font-medium">Cloudflare Pages</strong> (Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA) gehostet und über deren weltweites Content Delivery Network (CDN) ausgeliefert.
+        </p>
+        <p class="text-xs md:text-sm text-zinc-400 font-light leading-relaxed">
+          Beim Aufruf der Website erfasst Cloudflare automatisch technische Verbindungsdaten in Server-Log-Dateien:
+        </p>
+        <ul class="list-disc list-inside text-xs md:text-sm text-zinc-400 font-light space-y-1 pl-2">
+          <li>IP-Adresse des anfragenden Endgeräts</li>
+          <li>Datum und Uhrzeit der Serveranfrage</li>
+          <li>Übertragene Datenmenge und HTTP-Statuscode</li>
+          <li>Browsertyp und Betriebssystemversion</li>
+          <li>Referrer-URL (die zuvor besuchte Seite)</li>
+        </ul>
+        <p class="text-xs md:text-sm text-zinc-400 font-light leading-relaxed pt-2 border-t border-[#262932]/60">
+          <strong class="text-zinc-300 font-medium">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Ausfallsicherheit, technischer Stabilität und DDoS-Abwehr). Datenübertragungen in die USA sind über Standardvertragsklauseln bzw. das Data Privacy Framework abgesichert.
+        </p>
+      </section>
+
+      <!-- Section 3: Kontaktaufnahme -->
+      <section class="bg-[#14161b] border border-[#262932] p-6 md:p-8 space-y-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-[#c7b299]">3. Kontaktaufnahme & Datenverarbeitung</div>
+        <p class="text-xs md:text-sm text-zinc-300 font-light leading-relaxed">
+          Wenn Sie per E-Mail oder über ein Anfrageformular Kontakt mit uns aufnehmen, werden Ihre angegebenen Daten zur Bearbeitung der Anfrage und für eventuelle Anschlussfragen bei uns gespeichert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw. Art. 6 Abs. 1 lit. f DSGVO.
+        </p>
+      </section>
+
+      <!-- Section 4: Ihre Rechte nach der DSGVO -->
+      <section class="bg-[#14161b] border border-[#262932] p-6 md:p-8 space-y-5">
+        <div class="text-xs font-mono uppercase tracking-wider text-[#c7b299]">4. Ihre Rechte als betroffene Person</div>
+        <p class="text-xs md:text-sm text-zinc-300 font-light leading-relaxed">
+          Sie haben gemäß DSGVO jederzeit folgende Rechte bezüglich Ihrer personenbezogenen Daten:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="p-4 border border-[#262932] bg-[#0c0d10]/50 space-y-1.5">
+            <div class="text-xs font-mono uppercase text-zinc-200 font-medium">Auskunftsrecht (Art. 15 DSGVO)</div>
+            <p class="text-xs text-zinc-400 font-light">Kostenfreie Auskunft über Herkunft, Empfänger und Zweck der Daten.</p>
+          </div>
+          <div class="p-4 border border-[#262932] bg-[#0c0d10]/50 space-y-1.5">
+            <div class="text-xs font-mono uppercase text-zinc-200 font-medium">Berichtigung (Art. 16 DSGVO)</div>
+            <p class="text-xs text-zinc-400 font-light">Recht auf Korrektur unrichtiger oder unvollständiger Daten.</p>
+          </div>
+          <div class="p-4 border border-[#262932] bg-[#0c0d10]/50 space-y-1.5">
+            <div class="text-xs font-mono uppercase text-zinc-200 font-medium">Löschung (Art. 17 DSGVO)</div>
+            <p class="text-xs text-zinc-400 font-light">Löschung gespeicherter personenbezogener Daten („Recht auf Vergessenwerden“).</p>
+          </div>
+          <div class="p-4 border border-[#262932] bg-[#0c0d10]/50 space-y-1.5">
+            <div class="text-xs font-mono uppercase text-zinc-200 font-medium">Einschränkung (Art. 18 DSGVO)</div>
+            <p class="text-xs text-zinc-400 font-light">Recht auf Einschränkung der Datenverarbeitung.</p>
+          </div>
+          <div class="p-4 border border-[#262932] bg-[#0c0d10]/50 space-y-1.5">
+            <div class="text-xs font-mono uppercase text-zinc-200 font-medium">Datenübertragbarkeit (Art. 20 DSGVO)</div>
+            <p class="text-xs text-zinc-400 font-light">Bereitstellung der Daten in einem gängigen, maschinenlesbaren Format.</p>
+          </div>
+          <div class="p-4 border border-[#262932] bg-[#0c0d10]/50 space-y-1.5">
+            <div class="text-xs font-mono uppercase text-zinc-200 font-medium">Widerspruchsrecht (Art. 21 DSGVO)</div>
+            <p class="text-xs text-zinc-400 font-light">Widerspruch gegen Verarbeitung auf Basis von berechtigten Interessen.</p>
+          </div>
+        </div>
+
+        <p class="text-xs md:text-sm text-zinc-400 font-light leading-relaxed pt-3 border-t border-[#262932]/60">
+          <strong class="text-zinc-300 font-medium">Beschwerderecht:</strong> Gemäß Art. 77 DSGVO haben Sie das Recht auf Beschwerde bei der zuständigen Aufsichtsbehörde (z.B. Sächsischer Datenschutzbeauftragter).
+        </p>
+      </section>
+
+      <!-- Section 5: SSL/TLS -->
+      <section class="bg-[#14161b] border border-[#262932] p-6 md:p-8 space-y-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-[#c7b299]">5. Datensicherheit & SSL-/TLS-Verschlüsselung</div>
+        <p class="text-xs md:text-sm text-zinc-300 font-light leading-relaxed">
+          Diese Website nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Anfragen eine SSL- bzw. TLS-Verschlüsselung.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full bg-[#090a0d] border-t border-[#262932] text-zinc-500 py-12 px-6 md:px-10">
+    <div class="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-600">
+      <div>© 2026 Kutscherhaus Pölitzstraße 12a. Alle Rechte vorbehalten.</div>
+      <div class="flex items-center gap-6">
+        <a href="impressum.html" class="hover:text-zinc-400 transition-colors">Impressum</a>
+        <a href="datenschutz.html" class="text-[#c7b299]">Datenschutz</a>
+        <a href="index.html#anfrage" class="hover:text-zinc-400 transition-colors">Kontakt</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

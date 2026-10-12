@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="de" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>Kutscherhaus Pölitzstraße | Mobile WebApp</title>
+  <meta name="description" content="Exklusives Stadthaus-Idyll in Leipzig-Gohlis. 124 m² Wohnfläche, 5 Zimmer, privater Hofgarten." />
+  
+  <!-- PWA & Mobile Device Capabilities -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#0c0d10" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Kutscherhaus" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <script>
+    if (location.hostname.includes('web') && window.innerWidth >= 1024 && !sessionStorage.getItem('prefer_mobile') && !location.search.includes('mobile')) {
+      location.replace('/?desktop=1');
+    }
+    function switchToDesktop() {
+      try {
+        sessionStorage.setItem('prefer_desktop', '1');
+        localStorage.setItem('prefer_desktop', '1');
+        sessionStorage.removeItem('prefer_mobile');
+        localStorage.removeItem('prefer_mobile');
+      } catch(e) {}
+      if (location.hostname.includes('web')) {
+        location.href = '/?desktop=1';
+      } else {
+        location.href = '/desktop?desktop=1';
+      }
+    }
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            estate: {
+              bg: '#0c0d10',
+              surface: '#14161b',
+              card: '#181a20',
+              border: '#262932',
+              borderSubtle: '#1f2229',
+              muted: '#8b909a',
+              accent: '#c7b299',
+              accentHover: '#d9c7b0'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    /* iOS & Android (Samsung/Chrome) Ergonomic & Rendering Normalization */
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+      --sar: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0c0d10;
+      color: #f1f2f4;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding-top: var(--sat);
+      padding-bottom: calc(5.5rem + var(--sab));
+      padding-left: var(--sal);
+      padding-right: var(--sar);
+      overflow-x: hidden;
+      touch-action: pan-y pinch-zoom;
+    }
+
+    /* Prevent auto-zoom on iOS Safari when focusing inputs */
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+
+    /* Native momentum scrolling */
+    .snap-x-mandatory {
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .snap-x-mandatory::-webkit-scrollbar {
+      display: none;
+    }
+    .snap-item {
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+    }
+
+    /* Modal prevent background pull-down on Android/Samsung */
+    .modal-prevent-overscroll {
+      overscroll-behavior-y: contain;
+    }
+
+    /* Sketch Reveal Effect */
+    @keyframes sketchFade {
+      0% { opacity: 0.15; transform: scale(1.04); }
+      50% { opacity: 0.65; transform: scale(1); }
+      100% { opacity: 0.45; transform: scale(1.02); }
+    }
+    .animate-sketch-gentle {
+      animation: sketchFade 10s ease-in-out infinite alternate;
+    }
+
+    /* Active touch micro-feedback */
+    .touch-press:active {
+      transform: scale(0.97);
+      transition: transform 0.1s ease;
+    }
+
+    /* Custom pill scrollbar hide */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+
+<body class="bg-[#0c0d10] text-[#f1f2f4] selection:bg-[#c7b299] selection:text-[#0c0d10]">
+
+  <!-- ================================================================= -->
+  <!-- 0. TOP APP BAR (iOS Dynamic Island & Android Status Bar Aware) -->
+  <!-- ================================================================= -->
+  <header class="sticky top-0 z-40 bg-[#0c0d10]/92 backdrop-blur-xl border-b border-[#262932]">
+    <div class="px-4 py-3 flex items-center justify-between">
+      <!-- Brand & Location -->
+      <a href="#hero" class="flex items-center gap-2.5 touch-press">
+        <div class="w-8 h-8 rounded-full border border-[#c7b299]/60 flex items-center justify-center bg-[#181a20]">
+          <span class="text-[#c7b299] font-mono text-xs font-bold">K</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold tracking-wider uppercase text-white leading-tight">Kutscherhaus</span>
+          <span class="text-[10px] text-zinc-400 font-mono">Pölitzstraße 12a · Gohlis</span>
+        </div>
+      </a>
+
+      <!-- Quick Action Icons (Share & Inquiry) -->
+      <div class="flex items-center gap-2">
+        <!-- Native Share API Button -->
+        <button 
+          id="btn-share" 
+          type="button" 
+          onclick="shareProperty()" 
+          class="w-9 h-9 rounded-full bg-[#181a20] border border-[#262932] flex items-center justify-center text-zinc-300 hover:text-white active:bg-[#262932] transition-colors touch-press" 
+          aria-label="Teilen">
+          <i class="ph ph-share-network text-lg"></i>
+        </button>
+
+        <!-- Direct Inquiry Button -->
+        <a 
+          href="#anfrage" 
+          class="w-9 h-9 rounded-full bg-[#c7b299]/15 border border-[#c7b299]/40 flex items-center justify-center text-[#c7b299] active:bg-[#c7b299]/30 transition-colors touch-press" 
+          aria-label="Besichtigung anfragen">
+          <i class="ph ph-calendar-check text-lg"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Horizontal Category Scroll Chips (Sticky Sub-Nav) -->
+    <nav class="flex items-center gap-1.5 px-4 pb-2.5 pt-0.5 overflow-x-auto no-scrollbar snap-x border-t border-[#1c1e24]/60">
+      <a href="#hero" class="nav-chip active whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#c7b299] text-[#0c0d10] font-semibold transition-all">
+        Übersicht
+      </a>
+      <a href="#highlights" class="nav-chip whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#181a20] text-zinc-400 border border-[#262932] transition-all">
+        Fakten
+      </a>
+      <a href="#galerie" class="nav-chip whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#181a20] text-zinc-400 border border-[#262932] transition-all">
+        Räume & Fotos
+      </a>
+      <a href="#grundrisse" class="nav-chip whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#181a20] text-zinc-400 border border-[#262932] transition-all">
+        Grundrisse
+      </a>
+      <a href="#ausstattung" class="nav-chip whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#181a20] text-zinc-400 border border-[#262932] transition-all">
+        Ausstattung
+      </a>
+      <a href="#lage" class="nav-chip whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#181a20] text-zinc-400 border border-[#262932] transition-all">
+        Lage & Karte
+      </a>
+      <a href="#anfrage" class="nav-chip whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#181a20] text-zinc-400 border border-[#262932] transition-all">
+        Besichtigung
+      </a>
+    </nav>
+  </header>
+
+  <!-- ================================================================= -->
+  <!-- 1. HERO SECTION (Full Mobile Viewport Height, Carousel & Specs) -->
+  <!-- ================================================================= -->
+  <section id="hero" class="relative w-full pt-3 pb-8 px-4 border-b border-[#262932] flex flex-col justify-between">
+    
+    <!-- Mobile Hero Media Slider (Touch Swipe Carousel) -->
+    <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-[#262932] bg-[#14161b] shadow-2xl">
+      <!-- Carousel Track -->
+      <div id="hero-slider" class="w-full h-full flex overflow-x-auto snap-x-mandatory scroll-smooth no-scrollbar">
+        <!-- Slide 1: Main Facade -->
+        <div class="w-full h-full flex-shrink-0 snap-item relative">
+          <img 
+            src="/public/images/outdoor-01.jpeg" 
+            alt="Kutscherhaus Pölitzstraße Hauptfassade" 
+            class="w-full h-full object-cover object-center" 
+          />
+          <div class="absolute bottom-2.5 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[10px] font-mono text-white border border-white/10">
+            1/3 · Hauptfassade & Portal
+          </div>
+        </div>
+
+        <!-- Slide 2: Courtyard Garden -->
+        <div class="w-full h-full flex-shrink-0 snap-item relative">
+          <img 
+            src="/public/images/garden-03.jpeg" 
+            alt="Privater Hofgarten Kutscherhaus" 
+            class="w-full h-full object-cover object-center" 
+          />
+          <div class="absolute bottom-2.5 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[10px] font-mono text-white border border-white/10">
+            2/3 · Privater Hofgarten & Remise
+          </div>
+        </div>
+
+        <!-- Slide 3: Architectural Drawing -->
+        <div class="w-full h-full flex-shrink-0 snap-item relative bg-[#0e1014] flex items-center justify-center p-3">
+          <img 
+            src="/public/images/drawing-gold.png" 
+            alt="Historische Architektur-Zeichnung" 
+            class="w-full h-full object-contain filter contrast-125 animate-sketch-gentle" 
+          />
+          <div class="absolute bottom-2.5 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[10px] font-mono text-[#c7b299] border border-[#c7b299]/30">
+            3/3 · Historischer Aufriss (1912)
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide Indicator Dots -->
+      <div class="absolute bottom-3 right-3 flex items-center gap-1.5 z-10 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm">
+        <span id="dot-0" class="w-2 h-2 rounded-full bg-[#c7b299] transition-all"></span>
+        <span id="dot-1" class="w-1.5 h-1.5 rounded-full bg-white/40 transition-all"></span>
+        <span id="dot-2" class="w-1.5 h-1.5 rounded-full bg-white/40 transition-all"></span>
+      </div>
+
+      <!-- Status Tag -->
+      <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#0c0d10]/85 backdrop-blur-md border border-[#c7b299]/50 text-[#c7b299] text-[10px] font-mono font-medium tracking-wide uppercase flex items-center gap-1.5 shadow-lg">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#c7b299] animate-pulse"></span>
+        Einzeldenkmal · Bezugsbereit
+      </div>
+
+      <!-- Expand full photo button -->
+      <button 
+        type="button" 
+        onclick="openGalleryModal('aussen', 0)" 
+        class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center active:scale-95 transition-transform" 
+        aria-label="Fotos im Vollbild öffnen">
+        <i class="ph ph-corners-out text-base"></i>
+      </button>
+    </div>
+
+    <!-- Disclaimer under Hero Slider -->
+    <p class="text-[8.5px] font-mono text-zinc-500 mt-2 px-1 flex items-start gap-1 leading-tight">
+      <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+      <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+    </p>
+
+    <!-- Hero Content & Value Proposition -->
+    <div class="mt-4">
+      <div class="flex items-center gap-2 text-[11px] font-mono text-[#c7b299] uppercase tracking-wider mb-1">
+        <span>Leipzig-Gohlis Süd</span>
+        <span class="text-zinc-600">·</span>
+        <span>Seltene Gelegenheit</span>
+      </div>
+
+      <h1 class="text-2xl font-light tracking-tight text-white leading-tight">
+        Kutscherhaus Pölitzstraße.
+      </h1>
+      <p class="text-base text-zinc-300 font-light mt-0.5">
+        Freistehendes Stadthaus-Idyll mit privatem Hofgarten.
+      </p>
+
+      <p class="text-xs text-zinc-400 font-light leading-relaxed mt-2.5">
+        Ein denkmalgeschütztes Refugium in zweiter Reihe hinter Gründerzeit-Villen. 
+        Verbindet die historische Würde von 1912 mit hochwertiger Kernsanierung, 
+        Fußbodenheizung und ruhiger Süd-West-Oase.
+      </p>
+
+      <!-- Primary Action Buttons for Mobile -->
+      <div class="grid grid-cols-2 gap-2.5 mt-4">
+        <a 
+          href="#anfrage" 
+          class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl bg-[#c7b299] text-[#0c0d10] font-semibold text-xs uppercase tracking-wider touch-press shadow-md shadow-[#c7b299]/10">
+          <span>Besichtigung</span>
+          <i class="ph ph-calendar-check text-base"></i>
+        </a>
+        <a 
+          href="#grundrisse" 
+          class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl bg-[#181a20] border border-[#262932] text-zinc-200 font-medium text-xs uppercase tracking-wider touch-press">
+          <span>Grundrisse</span>
+          <i class="ph ph-compass text-base"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- 4 Key Metrics Pill Cards -->
+    <div id="highlights" class="grid grid-cols-2 gap-2 mt-5">
+      <div class="p-3 rounded-xl bg-[#14161b] border border-[#262932] flex flex-col">
+        <div class="text-xl font-light font-mono text-white">124 m²</div>
+        <div class="text-[10px] uppercase font-mono tracking-wider text-[#c7b299] mt-0.5">Wohnfläche</div>
+        <div class="text-[11px] text-zinc-400 mt-1">3 Ebenen, offenes Wohnkonzept</div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-[#14161b] border border-[#262932] flex flex-col">
+        <div class="text-xl font-light font-mono text-white">5</div>
+        <div class="text-[10px] uppercase font-mono tracking-wider text-[#c7b299] mt-0.5">Zimmer</div>
+        <div class="text-[11px] text-zinc-400 mt-1">Master-Suite, Studio & Büro</div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-[#14161b] border border-[#262932] flex flex-col">
+        <div class="text-xl font-light font-mono text-white">19,46 m²</div>
+        <div class="text-[10px] uppercase font-mono tracking-wider text-[#c7b299] mt-0.5">Terrasse & Balkon</div>
+        <div class="text-[11px] text-zinc-400 mt-1">Süd-West Hofgarten Oase</div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-[#14161b] border border-[#262932] flex flex-col">
+        <div class="text-xl font-light font-mono text-white">1912</div>
+        <div class="text-[10px] uppercase font-mono tracking-wider text-[#c7b299] mt-0.5">Bausubstanz</div>
+        <div class="text-[11px] text-zinc-400 mt-1">Denkmalgeschützt, vollsaniert</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 2. RÄUME & FOTO-GALERIE (Mobile Touch-First Horizontal Scroll) -->
+  <!-- ================================================================= -->
+  <section id="galerie" class="w-full py-8 px-4 border-b border-[#262932] bg-[#0f1115]">
+    <div class="mb-4">
+      <div class="flex items-end justify-between">
+        <div>
+          <div class="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c7b299] mb-1">
+            Lebensräume & Details
+          </div>
+          <h2 class="text-xl font-light text-white tracking-tight">
+            Räume im Detail erkunden
+          </h2>
+        </div>
+        <span class="text-[11px] font-mono text-zinc-500">
+          Wischen ➔
+        </span>
+      </div>
+      <p class="text-[8.5px] font-mono text-zinc-500 mt-2 flex items-start gap-1 leading-tight">
+        <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+        <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+      </p>
+    </div>
+
+    <!-- Horizontal Snap Scroll Room Cards -->
+    <div class="flex items-start gap-3 overflow-x-auto snap-x-mandatory no-scrollbar pb-3 -mx-4 px-4">
+      
+      <!-- Room 1: Wohnküche & Essbereich -->
+      <div 
+        onclick="openGalleryModal('kueche', 0)" 
+        class="w-[78vw] max-w-[310px] flex-shrink-0 snap-item rounded-2xl bg-[#14161b] border border-[#262932] overflow-hidden flex flex-col touch-press shadow-xl cursor-pointer">
+        <div class="relative w-full aspect-[16/10] bg-[#181a20]">
+          <img 
+            src="/public/images/gallery/kueche-wohn-01.jpeg" 
+            alt="Wohnküche & Essbereich Kutscherhaus" 
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover" 
+          />
+          <div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-mono text-zinc-200 border border-white/10 flex items-center gap-1">
+            <i class="ph ph-camera"></i>
+            <span>6 Fotos</span>
+          </div>
+        </div>
+        <div class="p-3.5 flex flex-col justify-between flex-grow">
+          <div>
+            <h3 class="text-sm font-medium text-white tracking-tight">Wohnküche & Essbereich</h3>
+            <p class="text-xs text-zinc-400 mt-1 font-light line-clamp-2">
+              Fließender Lebensraum mit offener Kochinsel, Wohnsalon und direktem Hofblick.
+            </p>
+            <p class="text-[8px] font-mono text-zinc-500/80 mt-1.5 flex items-start gap-1 leading-tight">
+              <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+              <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-[#1f2229] flex items-center justify-between text-xs text-[#c7b299] font-mono">
+            <span>EG · 47,5 m²</span>
+            <span class="text-[#c7b299] flex items-center gap-1">Galerie <i class="ph ph-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room 2: Master-Schlafzimmer -->
+      <div 
+        onclick="openGalleryModal('schlafzimmer', 0)" 
+        class="w-[78vw] max-w-[310px] flex-shrink-0 snap-item rounded-2xl bg-[#14161b] border border-[#262932] overflow-hidden flex flex-col touch-press shadow-xl cursor-pointer">
+        <div class="relative w-full aspect-[16/10] bg-[#181a20]">
+          <img 
+            src="/public/images/gallery/schlafzimmer-05.jpeg" 
+            alt="Master-Schlafzimmer Kutscherhaus" 
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover" 
+          />
+          <div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-mono text-zinc-200 border border-white/10 flex items-center gap-1">
+            <i class="ph ph-camera"></i>
+            <span>4 Fotos</span>
+          </div>
+        </div>
+        <div class="p-3.5 flex flex-col justify-between flex-grow">
+          <div>
+            <h3 class="text-sm font-medium text-white tracking-tight">Master-Schlafzimmer</h3>
+            <p class="text-xs text-zinc-400 mt-1 font-light line-clamp-2">
+              Ruhiger Rückzugsort im Obergeschoss mit Ankleide und privatem Balkon.
+            </p>
+            <p class="text-[8px] font-mono text-zinc-500/80 mt-1.5 flex items-start gap-1 leading-tight">
+              <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+              <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-[#1f2229] flex items-center justify-between text-xs text-[#c7b299] font-mono">
+            <span>OG · 15,4 m²</span>
+            <span class="text-[#c7b299] flex items-center gap-1">Galerie <i class="ph ph-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room 3: Kinder- & Jugendzimmer -->
+      <div 
+        onclick="openGalleryModal('kinderzimmer', 0)" 
+        class="w-[78vw] max-w-[310px] flex-shrink-0 snap-item rounded-2xl bg-[#14161b] border border-[#262932] overflow-hidden flex flex-col touch-press shadow-xl cursor-pointer">
+        <div class="relative w-full aspect-[16/10] bg-[#181a20]">
+          <img 
+            src="/public/images/gallery/kinderzimmer-01.jpeg" 
+            alt="Kinder- und Jugendzimmer Kutscherhaus" 
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover" 
+          />
+          <div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-mono text-zinc-200 border border-white/10 flex items-center gap-1">
+            <i class="ph ph-camera"></i>
+            <span>5 Fotos</span>
+          </div>
+        </div>
+        <div class="p-3.5 flex flex-col justify-between flex-grow">
+          <div>
+            <h3 class="text-sm font-medium text-white tracking-tight">Kinder- & Jugendzimmer</h3>
+            <p class="text-xs text-zinc-400 mt-1 font-light line-clamp-2">
+              Helles Zimmer mit Gaubenfenstern für Kinder, Gäste oder Kreativstudio.
+            </p>
+            <p class="text-[8px] font-mono text-zinc-500/80 mt-1.5 flex items-start gap-1 leading-tight">
+              <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+              <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-[#1f2229] flex items-center justify-between text-xs text-[#c7b299] font-mono">
+            <span>OG · 14,7 m²</span>
+            <span class="text-[#c7b299] flex items-center gap-1">Galerie <i class="ph ph-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room 4: Arbeitszimmer & Büro -->
+      <div 
+        onclick="openGalleryModal('arbeitszimmer', 0)" 
+        class="w-[78vw] max-w-[310px] flex-shrink-0 snap-item rounded-2xl bg-[#14161b] border border-[#262932] overflow-hidden flex flex-col touch-press shadow-xl cursor-pointer">
+        <div class="relative w-full aspect-[16/10] bg-[#181a20]">
+          <img 
+            src="/public/images/gallery/arbeitszimmer-01.jpeg" 
+            alt="Arbeitszimmer & Büro Kutscherhaus" 
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover" 
+          />
+          <div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-mono text-zinc-200 border border-white/10 flex items-center gap-1">
+            <i class="ph ph-camera"></i>
+            <span>4 Fotos</span>
+          </div>
+        </div>
+        <div class="p-3.5 flex flex-col justify-between flex-grow">
+          <div>
+            <h3 class="text-sm font-medium text-white tracking-tight">Arbeitszimmer & Büro</h3>
+            <p class="text-xs text-zinc-400 mt-1 font-light line-clamp-2">
+              Konzentrierter Rückzugsort für Homeoffice, Bibliothek und Konferenzen.
+            </p>
+            <p class="text-[8px] font-mono text-zinc-500/80 mt-1.5 flex items-start gap-1 leading-tight">
+              <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+              <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-[#1f2229] flex items-center justify-between text-xs text-[#c7b299] font-mono">
+            <span>OG · 8,8 m²</span>
+            <span class="text-[#c7b299] flex items-center gap-1">Galerie <i class="ph ph-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room 5: Masterbad & Wellness -->
+      <div 
+        onclick="openGalleryModal('badezimmer', 0)" 
+        class="w-[78vw] max-w-[310px] flex-shrink-0 snap-item rounded-2xl bg-[#14161b] border border-[#262932] overflow-hidden flex flex-col touch-press shadow-xl cursor-pointer">
+        <div class="relative w-full aspect-[16/10] bg-[#181a20]">
+          <img 
+            src="/public/images/gallery/badezimmer-01.jpeg" 
+            alt="Masterbad & Wellness Kutscherhaus" 
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover" 
+          />
+          <div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-mono text-zinc-200 border border-white/10 flex items-center gap-1">
+            <i class="ph ph-camera"></i>
+            <span>2 Fotos</span>
+          </div>
+        </div>
+        <div class="p-3.5 flex flex-col justify-between flex-grow">
+          <div>
+            <h3 class="text-sm font-medium text-white tracking-tight">Masterbad & Wellness</h3>
+            <p class="text-xs text-zinc-400 mt-1 font-light line-clamp-2">
+              Hochwertige Sanitärausstattung mit Wanne, Walk-in-Dusche und Feinsteinzeug.
+            </p>
+            <p class="text-[8px] font-mono text-zinc-500/80 mt-1.5 flex items-start gap-1 leading-tight">
+              <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+              <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-[#1f2229] flex items-center justify-between text-xs text-[#c7b299] font-mono">
+            <span>OG · 7,6 m²</span>
+            <span class="text-[#c7b299] flex items-center gap-1">Galerie <i class="ph ph-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room 6: Hofgarten & Freisitz -->
+      <div 
+        onclick="openGalleryModal('garten', 0)" 
+        class="w-[78vw] max-w-[310px] flex-shrink-0 snap-item rounded-2xl bg-[#14161b] border border-[#262932] overflow-hidden flex flex-col touch-press shadow-xl cursor-pointer">
+        <div class="relative w-full aspect-[16/10] bg-[#181a20]">
+          <img 
+            src="/public/images/gallery/garten-new-01.jpeg" 
+            alt="Hofgarten & Freisitz Kutscherhaus" 
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover" 
+          />
+          <div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-mono text-zinc-200 border border-white/10 flex items-center gap-1">
+            <i class="ph ph-camera"></i>
+            <span>5 Fotos</span>
+          </div>
+        </div>
+        <div class="p-3.5 flex flex-col justify-between flex-grow">
+          <div>
+            <h3 class="text-sm font-medium text-white tracking-tight">Hofgarten & Freisitz</h3>
+            <p class="text-xs text-zinc-400 mt-1 font-light line-clamp-2">
+              Mediterranes Pflaster, Natursteinbrunnen und geschützte Privatsphäre im Hof.
+            </p>
+            <p class="text-[8px] font-mono text-zinc-500/80 mt-1.5 flex items-start gap-1 leading-tight">
+              <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+              <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+            </p>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-[#1f2229] flex items-center justify-between text-xs text-[#c7b299] font-mono">
+            <span>Außenhof</span>
+            <span class="text-[#c7b299] flex items-center gap-1">Galerie <i class="ph ph-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-3 text-center">
+      <p class="text-[10px] font-mono text-zinc-500">
+        Tipp: Auf eine Karte tippen, um alle Bilder in Vollansicht zu sehen.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 3. INTERAKTIVE GRUNDRISSE (Mobile Level Switcher & Floor Matrix) -->
+  <!-- ================================================================= -->
+  <section id="grundrisse" class="w-full py-8 px-4 border-b border-[#262932] bg-[#0c0d10]">
+    <div class="mb-4">
+      <div class="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c7b299] mb-1">
+        Raumkonzept & Etagen
+      </div>
+      <h2 class="text-xl font-light text-white tracking-tight">
+        Architektur & Grundrisse
+      </h2>
+      <p class="text-xs text-zinc-400 font-light mt-1">
+        Drei durchdachte Wohnebenen für maximale Privatsphäre und Komfort.
+      </p>
+    </div>
+
+    <!-- Segmented Level Switcher Buttons (Thumb-Optimized min 44px) -->
+    <div class="grid grid-cols-3 gap-1.5 p-1 bg-[#14161b] rounded-xl border border-[#262932] mb-4">
+      <button 
+        type="button" 
+        id="plan-tab-eg" 
+        onclick="setFloorPlan('eg')" 
+        class="floor-btn active py-2.5 px-2 rounded-lg text-xs font-mono font-medium tracking-wide bg-[#c7b299] text-[#0c0d10] transition-all touch-press text-center">
+        Erdgeschoss<br><span class="text-[10px] opacity-80 font-normal">ca. 61,5 m²</span>
+      </button>
+
+      <button 
+        type="button" 
+        id="plan-tab-og" 
+        onclick="setFloorPlan('og')" 
+        class="floor-btn py-2.5 px-2 rounded-lg text-xs font-mono font-medium tracking-wide bg-transparent text-zinc-400 hover:text-white transition-all touch-press text-center">
+        Obergeschoss<br><span class="text-[10px] opacity-80 font-normal">ca. 57,1 m²</span>
+      </button>
+
+      <button 
+        type="button" 
+        id="plan-tab-ansicht" 
+        onclick="setFloorPlan('ansicht')" 
+        class="floor-btn py-2.5 px-2 rounded-lg text-xs font-mono font-medium tracking-wide bg-transparent text-zinc-400 hover:text-white transition-all touch-press text-center">
+        Außenansicht<br><span class="text-[10px] opacity-80 font-normal">Fassaden</span>
+      </button>
+    </div>
+
+    <!-- Plan Canvas Container -->
+    <div class="relative w-full aspect-[4/3] rounded-2xl bg-[#14161b] border border-[#262932] overflow-hidden p-2.5 flex items-center justify-center shadow-lg">
+      <img 
+        id="mobile-floor-img" 
+        src="/public/images/plan-outdoor-01.png" 
+        alt="Grundriss Kutscherhaus" 
+        class="w-full h-full object-contain filter contrast-[1.05]" 
+      />
+
+      <button 
+        type="button" 
+        onclick="openPlanModal()" 
+        class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white text-[11px] font-mono flex items-center gap-1.5 touch-press">
+        <i class="ph ph-magnifying-glass-plus"></i>
+        <span>Zoom</span>
+      </button>
+    </div>
+
+    <!-- Room Details Breakdown for Active Floor -->
+    <div class="mt-4 rounded-xl bg-[#14161b] border border-[#262932] p-4">
+      <div class="flex items-center justify-between pb-2.5 border-b border-[#262932]">
+        <h4 id="floor-breakdown-title" class="text-xs font-semibold uppercase tracking-wider text-white font-mono">
+          Flächenaufstellung Erdgeschoss
+        </h4>
+        <span id="floor-breakdown-total" class="text-xs font-mono text-[#c7b299]">
+          Gesamt: ca. 61 m²
+        </span>
+      </div>
+
+      <div id="floor-rooms-list" class="mt-3 space-y-2 text-xs font-mono">
+        <!-- Injected dynamically via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 4. AUSSTATTUNG & HIGHLIGHTS (Collapsible Mobile Accordion Cards) -->
+  <!-- ================================================================= -->
+  <section id="ausstattung" class="w-full py-8 px-4 border-b border-[#262932] bg-[#0f1115]">
+    <div class="mb-4">
+      <div class="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c7b299] mb-1">
+        Qualität & Substanz
+      </div>
+      <h2 class="text-xl font-light text-white tracking-tight">
+        Ausstattungs-Matrix
+      </h2>
+    </div>
+
+    <!-- Mobile Accordion Cards -->
+    <div class="space-y-2.5">
+      
+      <!-- Accordion 1 -->
+      <details class="group rounded-xl bg-[#14161b] border border-[#262932] p-3.5 open:border-[#c7b299]/50 transition-all">
+        <summary class="flex items-center justify-between cursor-pointer list-none select-none">
+          <div class="flex items-center gap-2.5">
+            <i class="ph ph-buildings text-lg text-[#c7b299]"></i>
+            <span class="text-xs font-medium text-white tracking-wide">Historie & Denkmalschutz</span>
+          </div>
+          <i class="ph ph-caret-down text-sm text-zinc-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="mt-3 pt-3 border-t border-[#1f2229] text-xs text-zinc-300 font-light space-y-2">
+          <p>• Errichtet 1912 als Kutscherhaus einer spätklassizistischen Villa.</p>
+          <p>• Vollumfängliches Einzeldenkmal mit besonderem steuerlichen Förderpotenzial (Denkmal-AfA).</p>
+          <p>• Liebevoll restaurierte Klinkerakzente und historische Mauerwerksdetails.</p>
+        </div>
+      </details>
+
+      <!-- Accordion 2 -->
+      <details class="group rounded-xl bg-[#14161b] border border-[#262932] p-3.5 open:border-[#c7b299]/50 transition-all">
+        <summary class="flex items-center justify-between cursor-pointer list-none select-none">
+          <div class="flex items-center gap-2.5">
+            <i class="ph ph-fire text-lg text-[#c7b299]"></i>
+            <span class="text-xs font-medium text-white tracking-wide">Energie, Wärme & Komfort</span>
+          </div>
+          <i class="ph ph-caret-down text-sm text-zinc-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="mt-3 pt-3 border-t border-[#1f2229] text-xs text-zinc-300 font-light space-y-2">
+          <p>• Effiziente Fußbodenheizung in allen Wohnräumen und Bädern für behagliche Strahlungswärme.</p>
+          <p>• Hochwärmegedämmte Holzsprossenfenster mit moderner Isolierverglasung.</p>
+          <p>• Moderne Gas-Brennwerttechnik mit Vorbereitung für regenerative Energiesysteme.</p>
+        </div>
+      </details>
+
+      <!-- Accordion 3 -->
+      <details class="group rounded-xl bg-[#14161b] border border-[#262932] p-3.5 open:border-[#c7b299]/50 transition-all">
+        <summary class="flex items-center justify-between cursor-pointer list-none select-none">
+          <div class="flex items-center gap-2.5">
+            <i class="ph ph-tree text-lg text-[#c7b299]"></i>
+            <span class="text-xs font-medium text-white tracking-wide">Freiraum, Hof & Garten</span>
+          </div>
+          <i class="ph ph-caret-down text-sm text-zinc-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="mt-3 pt-3 border-t border-[#1f2229] text-xs text-zinc-300 font-light space-y-2">
+          <p>• Ca. 13,80 m² geschützte Sonnenterrasse mit direktem Zugang von der Wohnküche.</p>
+          <p>• Eigener, eingefriedeter Innenhof mit mediterranem Natursteinpflaster und Brunnen.</p>
+          <p>• Zusätzlicher Süd-Balkon (5,66 m²) im 1. Obergeschoss.</p>
+        </div>
+      </details>
+
+      <!-- Accordion 4 -->
+      <details class="group rounded-xl bg-[#14161b] border border-[#262932] p-3.5 open:border-[#c7b299]/50 transition-all">
+        <summary class="flex items-center justify-between cursor-pointer list-none select-none">
+          <div class="flex items-center gap-2.5">
+            <i class="ph ph-shield-check text-lg text-[#c7b299]"></i>
+            <span class="text-xs font-medium text-white tracking-wide">Sicherheit & Privatsphäre</span>
+          </div>
+          <i class="ph ph-caret-down text-sm text-zinc-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="mt-3 pt-3 border-t border-[#1f2229] text-xs text-zinc-300 font-light space-y-2">
+          <p>• Diskrete Lage in zweiter Reihe – absolut uneinsehbar von der Pölitzstraße.</p>
+          <p>• Privates Einfahrtstor und separater Hauszugang ohne direkte Nachbarwände.</p>
+          <p>• Video-Gegensprechanlage und moderne Schließanlage.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 5. LAGE & MIKROLAGE (Device-Aware Smart Navigation Maps) -->
+  <!-- ================================================================= -->
+  <section id="lage" class="w-full py-8 px-4 border-b border-[#262932] bg-[#0c0d10]">
+    <div class="mb-4">
+      <div class="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c7b299] mb-1">
+        Mikrolage & Anbindung
+      </div>
+      <h2 class="text-xl font-light text-white tracking-tight">
+        Leipzig-Gohlis Süd
+      </h2>
+      <p class="text-xs text-zinc-400 font-light mt-1">
+        Eine der begehrtesten Wohnadressen Mitteldeutschlands: Grün, herrschaftlich und zentrumsnah.
+      </p>
+    </div>
+
+    <!-- Map Preview Card -->
+    <div class="relative w-full aspect-[16/9] rounded-2xl bg-[#181a20] border border-[#262932] overflow-hidden shadow-xl mb-4">
+      <iframe
+        title="Standort Kutscherhaus Pölitzstraße 12a Leipzig"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2492.096969567993!2d12.368819277028014!3d51.35515222247343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47a6f7e4f9b8c2df%3A0x6b772c388bc3b244!2sP%C3%B6litzstra%C3%9Fe%2012A%2C%2004155%20Leipzig!5e0!3m2!1sde!2sde!4v1700000000000!5m2!1sde!2sde"
+        class="w-full h-full border-0 filter invert-[90%] hue-rotate-180 contrast-[1.1] opacity-80"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+
+      <!-- Pin Badge Overlay -->
+      <div class="absolute top-3 left-3 px-3 py-1.5 rounded-full bg-[#0c0d10]/90 backdrop-blur-md border border-[#c7b299]/60 text-xs font-mono text-white flex items-center gap-1.5 shadow-lg">
+        <span class="w-2 h-2 rounded-full bg-[#c7b299] animate-ping"></span>
+        <span>Pölitzstraße 12a, 04155 Leipzig</span>
+      </div>
+    </div>
+
+    <!-- 1-Tap OS-Aware Route Planner Button -->
+    <button 
+      type="button" 
+      onclick="openNativeMaps()" 
+      class="w-full py-3.5 px-4 rounded-xl bg-[#181a20] border border-[#c7b299]/50 text-[#c7b299] text-xs font-mono font-semibold uppercase tracking-wider flex items-center justify-center gap-2 touch-press shadow-md">
+      <i class="ph ph-navigation-arrow text-base"></i>
+      <span id="maps-btn-text">Route in Karten-App öffnen</span>
+    </button>
+
+    <!-- Neighborhood Highlights Grid -->
+    <div class="grid grid-cols-2 gap-2 mt-4">
+      <div class="p-3 rounded-xl bg-[#14161b] border border-[#262932]">
+        <div class="flex items-center gap-2 text-[#c7b299] text-xs font-mono mb-1">
+          <i class="ph ph-park"></i>
+          <span>Rosental Park</span>
+        </div>
+        <div class="text-xs text-white font-medium">4 Min. zu Fuß</div>
+        <div class="text-[11px] text-zinc-400 mt-0.5">Weitläufige Auenlandschaft & Zoo</div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-[#14161b] border border-[#262932]">
+        <div class="flex items-center gap-2 text-[#c7b299] text-xs font-mono mb-1">
+          <i class="ph ph-buildings"></i>
+          <span>Innenstadt / Hbf</span>
+        </div>
+        <div class="text-xs text-white font-medium">8 Min. mit Rad / Tram</div>
+        <div class="text-[11px] text-zinc-400 mt-0.5">Direkte Tram-Linie 12 & 4</div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-[#14161b] border border-[#262932]">
+        <div class="flex items-center gap-2 text-[#c7b299] text-xs font-mono mb-1">
+          <i class="ph ph-coffee"></i>
+          <span>Gastronomie</span>
+        </div>
+        <div class="text-xs text-white font-medium">3-5 Min. zu Fuß</div>
+        <div class="text-[11px] text-zinc-400 mt-0.5">Boutiquen, Bäckereien & Cafés</div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-[#14161b] border border-[#262932]">
+        <div class="flex items-center gap-2 text-[#c7b299] text-xs font-mono mb-1">
+          <i class="ph ph-graduation-cap"></i>
+          <span>Bildung & Kitas</span>
+        </div>
+        <div class="text-xs text-white font-medium">Im Viertel vorhanden</div>
+        <div class="text-[11px] text-zinc-400 mt-0.5">Renommierte Gymnasien & Kitas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 6. BESICHTIGUNG & KONTAKT (Inquiry Form - Currently Inactive) -->
+  <!-- ================================================================= -->
+  <section id="anfrage" class="w-full py-8 px-4 border-b border-[#262932] bg-[#0f1115]">
+    <div class="mb-4">
+      <div class="text-[10px] font-mono uppercase tracking-[0.2em] text-[#c7b299] mb-1">
+        Besichtigung & Voranfrage
+      </div>
+      <h2 class="text-xl font-light text-white tracking-tight">
+        Private Besichtigung
+      </h2>
+      <p class="text-xs text-zinc-400 font-light mt-1">
+        Aktuell sind noch keine Direktkontakte freigeschaltet. Die offizielle Terminvergabe startet in Kürze.
+      </p>
+    </div>
+
+    <!-- Notice Banner: Currently Inactive -->
+    <div class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#181a20] border border-[#c7b299]/40 text-[#c7b299] text-xs font-mono mb-4">
+      <i class="ph ph-info text-base text-[#c7b299] flex-shrink-0"></i>
+      <span class="text-[11px] leading-snug">Hinweis: Die Anfragefunktion ist derzeit noch nicht aktiv.</span>
+    </div>
+
+    <!-- Mobile-Optimized Booking Form (Inactive/Preview) -->
+    <form id="mobile-inquiry-form" onsubmit="event.preventDefault(); showToast('Die Anfragefunktion ist derzeit noch nicht aktiv.');" class="rounded-2xl bg-[#14161b] border border-[#262932] p-4 space-y-3.5 opacity-85">
+      <div>
+        <label for="name" class="block text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
+          Vollständiger Name
+        </label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          disabled
+          placeholder="z.B. Dr. Michael Weber" 
+          class="w-full px-3.5 py-3 rounded-xl bg-[#181a20]/60 border border-[#262932] text-zinc-400 placeholder-zinc-600 cursor-not-allowed select-none" 
+        />
+      </div>
+
+      <div>
+        <label for="date" class="block text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
+          Wunschtermin (Optional)
+        </label>
+        <input 
+          type="text" 
+          id="date" 
+          name="date" 
+          disabled
+          placeholder="Termin nach Freischaltung wählbar" 
+          class="w-full px-3.5 py-3 rounded-xl bg-[#181a20]/60 border border-[#262932] text-zinc-400 placeholder-zinc-600 cursor-not-allowed select-none" 
+        />
+      </div>
+
+      <div>
+        <label for="message" class="block text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
+          Ihre Nachricht / Fragen
+        </label>
+        <textarea 
+          id="message" 
+          name="message" 
+          rows="3" 
+          disabled
+          placeholder="Anfragen werden nach offizieller Freischaltung entgegengenommen..." 
+          class="w-full px-3.5 py-3 rounded-xl bg-[#181a20]/60 border border-[#262932] text-zinc-400 placeholder-zinc-600 cursor-not-allowed select-none resize-none"
+        ></textarea>
+      </div>
+
+      <button 
+        type="button" 
+        disabled
+        class="w-full py-3.5 px-4 rounded-xl bg-[#181a20] border border-[#262932] text-zinc-500 font-semibold text-xs uppercase tracking-wider font-mono flex items-center justify-center gap-2 cursor-not-allowed select-none">
+        <i class="ph ph-lock-key text-base"></i>
+        <span>Anfragefunktion noch nicht aktiv</span>
+      </button>
+
+      <p class="text-[10px] text-zinc-500 text-center mt-1 font-mono">
+        Die Kontaktdaten und Anfragemöglichkeit werden zu einem späteren Zeitpunkt freigeschaltet.
+      </p>
+    </form>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- 7. FOOTER & IMPRESSUM -->
+  <!-- ================================================================= -->
+  <footer class="w-full py-8 px-4 text-center border-t border-[#1f2229] bg-[#0c0d10] text-zinc-500 text-xs font-mono">
+    <div class="mb-2 text-zinc-300 font-medium">Kutscherhaus Pölitzstraße 12a · Leipzig</div>
+    <div class="text-[10px] text-zinc-600 mb-4">Exklusives Baudenkmal · Baujahr 1912</div>
+    <div class="flex items-center justify-center gap-3 text-[11px] text-zinc-400">
+      <a href="javascript:void(0)" onclick="switchToDesktop()" class="underline hover:text-white cursor-pointer">Zur Desktop-Version</a>
+      <span>·</span>
+      <a href="impressum.html" class="underline hover:text-white">Impressum</a>
+      <span>·</span>
+      <a href="datenschutz.html" class="underline hover:text-white">Datenschutz</a>
+    </div>
+    <div class="text-[10px] text-zinc-600 mt-4">© 2026 Alle Rechte vorbehalten.</div>
+  </footer>
+
+  <!-- ================================================================= -->
+  <!-- 8. STICKY MOBILE THUMB-DOCK (Fixed Bottom for iOS Home Bar & Samsung Nav) -->
+  <!-- ================================================================= -->
+  <aside class="fixed bottom-0 left-0 right-0 z-50 bg-[#0c0d10]/95 backdrop-blur-xl border-t border-[#262932] px-4 pt-2.5 pb-[calc(0.6rem+var(--sab))] flex items-center justify-between gap-3 shadow-2xl">
+    <!-- Quick Floor Plans Button -->
+    <a 
+      href="#grundrisse" 
+      class="flex flex-col items-center justify-center w-14 h-12 rounded-xl bg-[#181a20] border border-[#262932] text-zinc-300 active:text-white active:bg-[#262932] transition-colors touch-press flex-shrink-0" 
+      aria-label="Grundrisse ansehen">
+      <i class="ph ph-compass text-xl text-[#c7b299]"></i>
+      <span class="text-[9px] font-mono mt-0.5">Pläne</span>
+    </a>
+
+    <!-- Primary Action CTA Button -->
+    <a 
+      href="#anfrage" 
+      class="flex-grow h-12 rounded-xl bg-[#c7b299] text-[#0c0d10] font-semibold text-xs uppercase tracking-wider font-mono flex items-center justify-center gap-2 touch-press shadow-lg shadow-[#c7b299]/20">
+      <i class="ph ph-calendar-check text-lg"></i>
+      <span>Besichtigung anfragen</span>
+    </a>
+  </aside>
+
+  <!-- ================================================================= -->
+  <!-- 9. FULL-SCREEN MOBILE LIGHTBOX & MODAL (Swipeable, Pinch/Zoom friendly) -->
+  <!-- ================================================================= -->
+  <div 
+    id="gallery-modal" 
+    class="fixed inset-0 z-50 bg-[#0c0d10]/98 backdrop-blur-2xl hidden flex flex-col justify-between modal-prevent-overscroll select-none">
+    
+    <!-- Modal Header (iOS Safe Area Top) -->
+    <div class="px-4 py-3.5 flex items-center justify-between border-b border-[#262932] bg-[#14161b]/80">
+      <div>
+        <h4 id="modal-title" class="text-xs font-semibold text-white uppercase font-mono tracking-wider">
+          Raum-Galerie
+        </h4>
+        <span id="modal-counter" class="text-[10px] font-mono text-[#c7b299]">
+          Foto 1 von 6
+        </span>
+      </div>
+
+      <button 
+        type="button" 
+        onclick="closeGalleryModal()" 
+        class="w-9 h-9 rounded-full bg-[#181a20] border border-[#262932] text-zinc-300 hover:text-white flex items-center justify-center touch-press" 
+        aria-label="Schließen">
+        <i class="ph ph-x text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Modal Center: Swipable Active Image -->
+    <div 
+      id="modal-touch-area" 
+      class="relative flex-grow flex items-center justify-center p-2 overflow-hidden touch-pan-x">
+      <img 
+        id="modal-image" 
+        src="" 
+        alt="Vergrößerte Raumansicht Kutscherhaus" 
+        class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl transition-opacity duration-200" 
+      />
+
+      <!-- Left / Right Touch Buttons -->
+      <button 
+        type="button" 
+        onclick="prevModalPhoto()" 
+        class="absolute left-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center touch-press backdrop-blur-md" 
+        aria-label="Vorheriges Bild">
+        <i class="ph ph-caret-left text-2xl"></i>
+      </button>
+
+      <button 
+        type="button" 
+        onclick="nextModalPhoto()" 
+        class="absolute right-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center touch-press backdrop-blur-md" 
+        aria-label="Nächstes Bild">
+        <i class="ph ph-caret-right text-2xl"></i>
+      </button>
+    </div>
+
+    <!-- Modal Footer with caption & disclaimer -->
+    <div class="px-4 py-2.5 border-t border-[#262932] bg-[#14161b]/95 flex flex-col gap-1 text-xs font-mono">
+      <div class="flex items-center justify-between text-zinc-300">
+        <span id="modal-caption" class="truncate pr-2">Kutscherhaus Pölitzstraße</span>
+        <span class="text-[10px] text-zinc-500 whitespace-nowrap">Wischen zum Blättern</span>
+      </div>
+      <p class="text-[8.5px] font-mono text-zinc-500 flex items-start gap-1 leading-tight">
+        <span class="text-[#c7b299]/70 shrink-0">ℹ</span>
+        <span>Hinweis: Originalaufnahmen mit digitaler Retusche sowie KI-Visualisierungen. Dient ausschließlich Illustrations- und Werbezwecken.</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 10. FLOOR PLAN FULLSCREEN MODAL -->
+  <!-- ================================================================= -->
+  <div 
+    id="plan-modal" 
+    class="fixed inset-0 z-50 bg-[#0c0d10]/98 backdrop-blur-2xl hidden flex flex-col justify-between modal-prevent-overscroll select-none">
+    <div class="px-4 py-3.5 flex items-center justify-between border-b border-[#262932] bg-[#14161b]/80">
+      <div>
+        <h4 class="text-xs font-semibold text-white uppercase font-mono tracking-wider">
+          Original-Grundriss (Vollbild)
+        </h4>
+        <span class="text-[10px] font-mono text-[#c7b299]">Pinch-to-Zoom möglich</span>
+      </div>
+      <button 
+        type="button" 
+        onclick="closePlanModal()" 
+        class="w-9 h-9 rounded-full bg-[#181a20] border border-[#262932] text-zinc-300 hover:text-white flex items-center justify-center touch-press">
+        <i class="ph ph-x text-lg"></i>
+      </button>
+    </div>
+
+    <div class="flex-grow flex items-center justify-center p-3 overflow-auto">
+      <img 
+        id="plan-modal-image" 
+        src="/public/images/plan-outdoor-01.png" 
+        alt="Grundriss im Detail" 
+        class="max-w-full max-h-[82vh] object-contain" 
+      />
+    </div>
+
+    <div class="px-4 py-2.5 border-t border-[#262932] bg-[#14161b]/95 text-center flex items-center justify-center text-xs font-mono">
+      <span class="text-zinc-300">Maßstabsgetreue Fachplanung · Kutscherhaus Pölitzstraße</span>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 11. TOAST NOTIFICATION FOR MOBILE (Clipboard / Form Confirmation) -->
+  <!-- ================================================================= -->
+  <div 
+    id="mobile-toast" 
+    class="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#181a20] border border-[#c7b299] text-white px-4 py-2.5 rounded-xl shadow-2xl text-xs font-mono flex items-center gap-2 transform -translate-y-8 opacity-0 pointer-events-none transition-all duration-300">
+    <i class="ph ph-check-circle text-lg text-[#c7b299]"></i>
+    <span id="toast-message">Mitteilung</span>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 12. CLIENT LOGIC & MOBILE TOUCH GESTURES -->
+  <!-- ================================================================= -->
+  <script>
+    // --- Room Galleries Database ---
+    const ROOM_DATA = {
+      kueche: {
+        id: "kueche",
+        title: "Wohnküche & Essbereich",
+        area: "EG · 47,5 m²",
+        photos: [
+          { src: "/public/images/gallery/kueche-wohn-01.jpeg", caption: "Offene Designer-Küche mit Kochinsel, Essbereich und historischem Ziegelgewölbe" },
+          { src: "/public/images/gallery/kueche-wohn-02.jpeg", caption: "Behaglicher Wohnsalon mit grünem Samtsofa und warmem Beleuchtungskonzept" },
+          { src: "/public/images/gallery/kueche-wohn-03.jpeg", caption: "Eleganter Loungebereich mit maßgefertigter Wandnische und Holzakzenten" },
+          { src: "/public/images/gallery/kueche-wohn-04.jpeg", caption: "Modernes Wohnambiente in warmen Erdtönen mit Ledersessel und Designertisch" },
+          { src: "/public/images/gallery/kueche-wohn-05.jpeg", caption: "Heller Wohnbereich im skandinavischen Stil mit Naturholz-Elementen" },
+          { src: "/public/images/gallery/kueche-wohn-06.jpeg", caption: "Lichtdurchfluteter Raum vor Möblierung mit edlem Fischgrätparkett und Einbauspots" }
+        ]
+      },
+      schlafzimmer: {
+        id: "schlafzimmer",
+        title: "Master-Schlafzimmer",
+        area: "OG · 15,4 m²",
+        photos: [
+          { src: "/public/images/gallery/schlafzimmer-05.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/Gemini_Generated_Image_sz9topsz9topsz9t.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/schlafzimmer-perspective-2.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/schlafzimmer-02.jpeg", caption: "Master-Schlafzimmer vor Möblierung mit durchgehendem Fischgrätparkett" }
+        ]
+      },
+      kinderzimmer: {
+        id: "kinderzimmer",
+        title: "Kinder- & Jugendzimmer",
+        area: "OG · 14,7 m²",
+        photos: [
+          { src: "/public/images/gallery/kinderzimmer-01.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/kinderzimmer-02.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/kinderzimmer-03.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/kinderzimmer-04.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/kinderzimmer-05.jpeg", caption: "Kinder- und Jugendzimmer vor Möblierung mit sichtbarem Fachwerk und Fischgrätparkett" }
+        ]
+      },
+      arbeitszimmer: {
+        id: "arbeitszimmer",
+        title: "Arbeitszimmer & Büro",
+        area: "OG · 8,8 m²",
+        photos: [
+          { src: "/public/images/gallery/arbeitszimmer-01.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/arbeitszimmer-03.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/arbeitszimmer-04.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/arbeitszimmer-05.jpeg", caption: "Arbeitszimmer vor Möblierung mit durchgehendem Fischgrätparkett" }
+        ]
+      },
+      badezimmer: {
+        id: "badezimmer",
+        title: "Masterbad & Wellness",
+        area: "OG · 7,6 m²",
+        photos: [
+          { src: "/public/images/gallery/badezimmer-01.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" },
+          { src: "/public/images/gallery/badezimmer-02.jpeg", caption: "Einrichtungsidee (Gestaltungsbeispiel)" }
+        ]
+      },
+      garten: {
+        id: "garten",
+        title: "Hofgarten & Freisitz",
+        area: "Außenhof",
+        photos: [
+          { src: "/public/images/gallery/garten-new-01.jpeg", caption: "Idyllischer Hofgarten mit Natursteinbrunnen, Staudenbeet und Lichterkette" },
+          { src: "/public/images/gallery/garten-new-02.jpeg", caption: "Mediterrane Gartenidylle mit Terrakotta-Amphoren, Olivenbäumen und Skulptur" },
+          { src: "/public/images/gallery/garten-new-05.jpeg", caption: "Sommerlicher Freisitz mit Holztisch und BBQ-Grillzone" },
+          { src: "/public/images/gallery/garten-new-06.jpeg", caption: "Freizeit-Gestaltungskonzept mit privatem Putting Green" },
+          { src: "/public/images/gallery/garten-new-07.jpeg", caption: "Privater Hofgarten vor individueller Gestaltung mit gepflegter Rasenfläche" }
+        ]
+      },
+      aussen: {
+        id: "aussen",
+        title: "Außenansichten & Historie",
+        area: "Außenansicht",
+        photos: [
+          { src: "/public/images/outdoor-01.jpeg", caption: "Sanierte Hauptfassade & Portal" },
+          { src: "/public/images/outdoor-02.jpeg", caption: "Perspektive Innenhof & Remise" },
+          { src: "/public/images/garden-03.jpeg", caption: "Privater Hofgarten mit Natursteinbrunnen" },
+          { src: "/public/images/drawing-gold.png", caption: "Historische Architektur-Zeichnung (1912)" }
+        ]
+      }
+    };
+
+    // --- Floor Plan Database ---
+    const FLOOR_DATA = {
+      eg: {
+        image: "/public/images/plan-outdoor-01.png",
+        title: "Flächenaufstellung Erdgeschoss",
+        total: "ca. 61,5 m² Wohnfläche",
+        rooms: [
+          { name: "Küche, Essen & Wohnen", area: "47,51 m²" },
+          { name: "Hauswirtschaftsraum (HWR / Sanitär)", area: "5,44 m²" },
+          { name: "Gäste-WC", area: "1,40 m²" },
+          { name: "Eingangsbereich & Garderobe", area: "4,23 m²" },
+          { name: "Haustechnik & Abstellraum (HA)", area: "2,93 m²" },
+          { name: "Terrasse (25% Anrechnung)", area: "3,45 m² (real 13,80 m²)" }
+        ]
+      },
+      og: {
+        image: "/public/images/plan-outdoor-02.png",
+        title: "Flächenaufstellung Obergeschoss",
+        total: "ca. 57,1 m² Wohnfläche",
+        rooms: [
+          { name: "Schlafen & Ankleide", area: "15,42 m²" },
+          { name: "Kinderzimmer", area: "14,67 m²" },
+          { name: "Zimmer / Büro", area: "8,75 m²" },
+          { name: "Masterbad mit Wanne & Dusche", area: "7,60 m² (ca. 7,50 m²)" },
+          { name: "Flur & Erschließung", area: "7,84 m²" },
+          { name: "Balkon (50% Anrechnung)", area: "2,83 m² (real 5,66 m²)" }
+        ]
+      },
+      ansicht: {
+        image: "/public/images/plan-outdoor-03.png",
+        title: "Fassadenansichten & Schnitt",
+        total: "Historische Remise 1912",
+        rooms: [
+          { name: "Südansicht (Haupteingang)", area: "Pölitzstraße" },
+          { name: "Ostansicht (Innenhof)", area: "Gartenseite" },
+          { name: "Westansicht (Remisenflügel)", area: "Ziegelmauerwerk" },
+          { name: "Denkmalschutz-Gutachten", area: "Einzeldenkmal" }
+        ]
+      }
+    };
+
+    // --- Hero Touch Carousel Dots Listener ---
+    const heroSlider = document.getElementById('hero-slider');
+    if (heroSlider) {
+      heroSlider.addEventListener('scroll', () => {
+        const slideWidth = heroSlider.clientWidth;
+        const index = Math.round(heroSlider.scrollLeft / slideWidth);
+        for (let i = 0; i < 3; i++) {
+          const dot = document.getElementById(`dot-${i}`);
+          if (dot) {
+            if (i === index) {
+              dot.className = "w-2 h-2 rounded-full bg-[#c7b299] transition-all";
+            } else {
+              dot.className = "w-1.5 h-1.5 rounded-full bg-white/40 transition-all";
+            }
+          }
+        }
+      }, { passive: true });
+    }
+
+    // --- Floor Plan Switcher ---
+    let currentFloor = 'eg';
+    function setFloorPlan(level) {
+      currentFloor = level;
+      const data = FLOOR_DATA[level];
+      if (!data) return;
+
+      // Update image
+      const img = document.getElementById('mobile-floor-img');
+      if (img) img.src = data.image;
+
+      // Update titles
+      document.getElementById('floor-breakdown-title').textContent = data.title;
+      document.getElementById('floor-breakdown-total').textContent = data.total;
+
+      // Update tabs style
+      ['eg', 'og', 'ansicht'].forEach(key => {
+        const btn = document.getElementById(`plan-tab-${key}`);
+        if (key === level) {
+          btn.className = "floor-btn active py-2.5 px-2 rounded-lg text-xs font-mono font-medium tracking-wide bg-[#c7b299] text-[#0c0d10] transition-all touch-press text-center";
+        } else {
+          btn.className = "floor-btn py-2.5 px-2 rounded-lg text-xs font-mono font-medium tracking-wide bg-transparent text-zinc-400 hover:text-white transition-all touch-press text-center";
+        }
+      });
+
+      // Render rooms list
+      const listEl = document.getElementById('floor-rooms-list');
+      listEl.innerHTML = '';
+      data.rooms.forEach(r => {
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between py-1.5 border-b border-[#1c1e24] last:border-none";
+        item.innerHTML = `
+          <span class="text-zinc-300 font-light">${r.name}</span>
+          <span class="text-zinc-400 text-[11px]">${r.area}</span>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    // Initialize Floor Plan
+    setFloorPlan('eg');
+
+    // --- Floor Plan Fullscreen Modal ---
+    function openPlanModal() {
+      const data = FLOOR_DATA[currentFloor];
+      document.getElementById('plan-modal-image').src = data ? data.image : '/public/images/plan-outdoor-01.png';
+      document.getElementById('plan-modal').classList.remove('hidden');
+    }
+    function closePlanModal() {
+      document.getElementById('plan-modal').classList.add('hidden');
+    }
+
+    // --- Lightbox / Modal Logic with Touch Gestures ---
+    let activeCategory = 'kueche';
+    let currentPhotoIdx = 0;
+
+    function openGalleryModal(catKey, idx = 0) {
+      if (!ROOM_DATA[catKey]) return;
+      activeCategory = catKey;
+      currentPhotoIdx = idx;
+      updateModalPhoto();
+      document.getElementById('gallery-modal').classList.remove('hidden');
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(10); // Subtle haptic feedback
+      }
+    }
+
+    function closeGalleryModal() {
+      document.getElementById('gallery-modal').classList.add('hidden');
+    }
+
+    function updateModalPhoto() {
+      const cat = ROOM_DATA[activeCategory];
+      const total = cat.photos.length;
+      const item = cat.photos[currentPhotoIdx];
+      const src = typeof item === 'string' ? item : item.src;
+      const caption = (typeof item === 'object' && item.caption) ? item.caption : `${cat.title} · Foto ${currentPhotoIdx + 1}`;
+
+      document.getElementById('modal-title').textContent = cat.title;
+      document.getElementById('modal-counter').textContent = `Foto ${currentPhotoIdx + 1} von ${total}`;
+      const captionEl = document.getElementById('modal-caption');
+      if (captionEl) captionEl.textContent = caption;
+      
+      const img = document.getElementById('modal-image');
+      img.style.opacity = '0.3';
+      img.src = src;
+      img.onload = () => { img.style.opacity = '1'; };
+    }
+
+    function nextModalPhoto() {
+      const cat = ROOM_DATA[activeCategory];
+      currentPhotoIdx = (currentPhotoIdx + 1) % cat.photos.length;
+      updateModalPhoto();
+    }
+
+    function prevModalPhoto() {
+      const cat = ROOM_DATA[activeCategory];
+      currentPhotoIdx = (currentPhotoIdx - 1 + cat.photos.length) % cat.photos.length;
+      updateModalPhoto();
+    }
+
+    // Touch Swipe Detection for Lightbox
+    const modalTouchArea = document.getElementById('modal-touch-area');
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    if (modalTouchArea) {
+      modalTouchArea.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      modalTouchArea.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipeGesture();
+      }, { passive: true });
+    }
+
+    function handleSwipeGesture() {
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 40) {
+        if (diff < 0) {
+          nextModalPhoto(); // Swiped Left
+        } else {
+          prevModalPhoto(); // Swiped Right
+        }
+      }
+    }
+
+    // --- Device-Aware Maps Opening (Apple Maps for iOS, Google Maps for Android/Samsung) ---
+    function openNativeMaps() {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const destination = encodeURIComponent("Pölitzstraße 12A, 04155 Leipzig");
+
+      if (isIOS) {
+        // Apple Maps URL scheme
+        window.location.href = `maps://?q=${destination}`;
+      } else {
+        // Google Maps Universal intent
+        window.location.href = `https://www.google.com/maps/search/?api=1&query=${destination}`;
+      }
+    }
+
+    // Update Maps Button text based on OS
+    document.addEventListener("DOMContentLoaded", () => {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const isAndroid = /Android/.test(navigator.userAgent);
+      const btnText = document.getElementById('maps-btn-text');
+      if (btnText) {
+        if (isIOS) {
+          btnText.textContent = "In Apple Karten öffnen";
+        } else if (isAndroid) {
+          btnText.textContent = "In Google Maps öffnen";
+        }
+      }
+    });
+
+    // --- Native Share API with Clipboard Fallback ---
+    async function shareProperty() {
+      const shareData = {
+        title: 'Kutscherhaus Pölitzstraße Leipzig',
+        text: 'Denkmalgeschütztes Stadthaus-Idyll in Leipzig-Gohlis. 124 m² Wohnfläche, 5 Zimmer, privater Hofgarten.',
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (err) {
+          // User cancelled share
+        }
+      } else {
+        // Fallback: Copy link to clipboard
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(window.location.href).then(() => {
+            showToast("Link in Zwischenablage kopiert!");
+          }).catch(() => {
+            showToast("Teilen wird nicht unterstützt.");
+          });
+        }
+      }
+    }
+
+    // --- Toast Notification ---
+    function showToast(msg) {
+      const toast = document.getElementById('mobile-toast');
+      const text = document.getElementById('toast-message');
+      text.textContent = msg;
+      toast.classList.remove('opacity-0', '-translate-y-8', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-8', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2600);
+    }
+
+    // --- Inquiry Form Submission ---
+    function handleInquirySubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const name = form.name.value;
+      showToast(`Vielen Dank, ${name}! Ihre Anfrage wurde übermittelt.`);
+      form.reset();
+    }
+
+    // --- Sticky Nav Active State Highlight via Scroll Spy ---
+    const sections = ['hero', 'highlights', 'galerie', 'grundrisse', 'ausstattung', 'lage', 'anfrage'];
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY + 120;
+      let currentSectionId = 'hero';
+
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollPos) {
+          currentSectionId = id;
+        }
+      }
+
+      document.querySelectorAll('.nav-chip').forEach(chip => {
+        const href = chip.getAttribute('href');
+        if (href === `#${currentSectionId}`) {
+          chip.className = "nav-chip active whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#c7b299] text-[#0c0d10] font-semibold transition-all";
+          chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        } else {
+          chip.className = "nav-chip whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono tracking-wide bg-[#181a20] text-zinc-400 border border-[#262932] transition-all";
+        }
+      });
+    }, { passive: true });
+
+    // --- Register Service Worker for Mobile Caching (v4 Network-First) ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=4').then((reg) => {
+          reg.update();
+        }).catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

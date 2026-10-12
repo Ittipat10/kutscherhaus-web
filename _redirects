@@ -1,0 +1,3 @@
+/desktop /index.html 200
+/desktop.html /index.html 200
+/WebApp/public/* /public/:splat 200
